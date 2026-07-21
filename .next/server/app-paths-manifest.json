@@ -1,0 +1,15 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/admin/branch/page": "app/admin/branch/page.js",
+  "/admin/branch/scan/page": "app/admin/branch/scan/page.js",
+  "/admin/branch/rounds/page": "app/admin/branch/rounds/page.js",
+  "/admin/branch/print/page": "app/admin/branch/print/page.js",
+  "/auth/callback/route": "app/auth/callback/route.js",
+  "/admin/master/page": "app/admin/master/page.js",
+  "/auth/login/page": "app/auth/login/page.js",
+  "/pickup/page": "app/pickup/page.js",
+  "/pickup/my/applications/page": "app/pickup/my/applications/page.js",
+  "/auth/profile/page": "app/auth/profile/page.js",
+  "/privacy/page": "app/privacy/page.js",
+  "/pickup/my/page": "app/pickup/my/page.js"
+}
