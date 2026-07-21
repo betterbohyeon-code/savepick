@@ -9,16 +9,19 @@ export interface KakaoBranchConfig {
   restApiKey: string  // 카카오 REST API 키 (= client_id, 공개 정보)
 }
 
+// ⚠️ TODO: 아래 8개 지점은 아직 "앱 ID"가 들어있는 임시값입니다 (실제 REST API 키 아님).
+// 카카오 개발자 콘솔 > 각 지점 앱 > 앱 설정 > 플랫폼 키 > REST API 키 에서
+// 16진수 문자열 값을 확인해서 교체해야 실제로 작동합니다. (해운대만 검증 완료)
 export const KAKAO_BRANCHES: Record<string, KakaoBranchConfig> = {
-  hwajung:    { code: 'hwajung',    name: '세이브존 화정',     restApiKey: '1199610' },
-  jeonju:     { code: 'jeonju',     name: '세이브존 전주코아', restApiKey: '1199447' },
-  bucheon:    { code: 'bucheon',    name: '세이브존 부천상동', restApiKey: '1199446' },
-  haeundae:   { code: 'haeundae',   name: '세이브존 해운대',   restApiKey: '1199445' },
-  daejeon:    { code: 'daejeon',    name: '세이브존 대전',     restApiKey: '1199444' },
-  gwangmyung: { code: 'gwangmyung', name: '세이브존 광명',     restApiKey: '1199442' },
-  seongnam:   { code: 'seongnam',   name: '세이브존 성남',     restApiKey: '1199438' },
-  nowon:      { code: 'nowon',      name: '세이브존 노원',     restApiKey: '1199429' },
-  ulsan:      { code: 'ulsan',      name: '세이브존 울산',     restApiKey: '1199419' },
+  hwajung:    { code: 'hwajung',    name: '세이브존 화정',     restApiKey: '1199610' /* TODO: 실제 REST API 키로 교체 */ },
+  jeonju:     { code: 'jeonju',     name: '세이브존 전주코아', restApiKey: '1199447' /* TODO: 실제 REST API 키로 교체 */ },
+  bucheon:    { code: 'bucheon',    name: '세이브존 부천상동', restApiKey: '1199446' /* TODO: 실제 REST API 키로 교체 */ },
+  haeundae:   { code: 'haeundae',   name: '세이브존 해운대',   restApiKey: '0be3c6956fa25823a36035b3c4e9b18f' },
+  daejeon:    { code: 'daejeon',    name: '세이브존 대전',     restApiKey: '1199444' /* TODO: 실제 REST API 키로 교체 */ },
+  gwangmyung: { code: 'gwangmyung', name: '세이브존 광명',     restApiKey: '1199442' /* TODO: 실제 REST API 키로 교체 */ },
+  seongnam:   { code: 'seongnam',   name: '세이브존 성남',     restApiKey: '1199438' /* TODO: 실제 REST API 키로 교체 */ },
+  nowon:      { code: 'nowon',      name: '세이브존 노원',     restApiKey: '1199429' /* TODO: 실제 REST API 키로 교체 */ },
+  ulsan:      { code: 'ulsan',      name: '세이브존 울산',     restApiKey: '1199419' /* TODO: 실제 REST API 키로 교체 */ },
 }
 
 export const DEFAULT_STORE = 'hwajung'
