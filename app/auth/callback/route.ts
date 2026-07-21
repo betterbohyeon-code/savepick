@@ -7,6 +7,7 @@ import { cookies } from 'next/headers'
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
+  const store = requestUrl.searchParams.get('store') || 'hwajung'
 
   if (code) {
     const cookieStore = cookies()
@@ -39,7 +40,7 @@ export async function GET(request: Request) {
         .single()
 
       if (!profile?.is_profile_complete) {
-        return NextResponse.redirect(new URL('/auth/profile', request.url))
+        return NextResponse.redirect(new URL(`/auth/profile?store=${encodeURIComponent(store)}`, request.url))
       }
 
       // 관리자 여부 확인
@@ -58,5 +59,5 @@ export async function GET(request: Request) {
     }
   }
 
-  return NextResponse.redirect(new URL('/pickup', request.url))
+  return NextResponse.redirect(new URL(`/pickup?store=${encodeURIComponent(store)}`, request.url))
 }
