@@ -64,6 +64,7 @@ export async function POST(request: Request) {
     })
 
   if (error) {
+    console.error('[api/profile] upsert error:', JSON.stringify(error))
     if (error.code === '23505') {
       return NextResponse.json({ error: '이미 등록된 전화번호입니다.' }, { status: 409 })
     }
