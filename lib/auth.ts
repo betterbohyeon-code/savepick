@@ -3,11 +3,15 @@ import { supabase } from './supabase'
 import type { UserProfile, Admin } from '@/types'
 
 // 카카오 로그인
-export async function signInWithKakao() {
+export async function signInWithKakao(store?: string) {
+  const callbackUrl = store
+    ? `${window.location.origin}/auth/callback?store=${encodeURIComponent(store)}`
+    : `${window.location.origin}/auth/callback`
+
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'kakao',
     options: {
-      redirectTo: `${window.location.origin}/auth/callback`,
+      redirectTo: callbackUrl,
       scopes: 'profile_nickname account_email',
     },
   })
