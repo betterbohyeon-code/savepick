@@ -4,7 +4,6 @@
 import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import { signInWithKakao } from '@/lib/auth'
 
 export default function LoginPage() {
   return (
@@ -27,14 +26,9 @@ function LoginPageInner() {
     })
   }, [])
 
-  const handleKakaoLogin = async () => {
+  const handleKakaoLogin = () => {
     setLoading(true)
-    const { error } = await signInWithKakao(store)
-    if (error) {
-      console.error('로그인 오류:', error)
-      setLoading(false)
-    }
-    // 성공 시 OAuth redirect 처리됨
+    window.location.href = `/auth/kakao/start?store=${encodeURIComponent(store)}`
   }
 
   return (
