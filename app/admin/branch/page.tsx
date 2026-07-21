@@ -258,7 +258,6 @@ export default function BranchAdminPage() {
     !searchQuery ||
     (a as any).user?.name?.includes(searchQuery) ||
     (a as any).user?.phone?.includes(searchQuery) ||
-    a.pickup_code?.includes(searchQuery.toUpperCase())
   )
 
   const stats = {
