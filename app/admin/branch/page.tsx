@@ -257,7 +257,7 @@ export default function BranchAdminPage() {
   const filtered = applications.filter(a =>
     !searchQuery ||
     (a as any).user?.name?.includes(searchQuery) ||
-    (a as any).user?.phone?.includes(searchQuery) ||
+    (a as any).user?.phone?.includes(searchQuery)
   )
 
   const stats = {
