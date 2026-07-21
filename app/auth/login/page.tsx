@@ -1,25 +1,35 @@
 'use client'
 // app/auth/login/page.tsx - 카카오 로그인 페이지
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { Suspense, useEffect, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { signInWithKakao } from '@/lib/auth'
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginPageInner />
+    </Suspense>
+  )
+}
+
+function LoginPageInner() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const store = searchParams.get('store') || 'hwajung'
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     // 이미 로그인된 경우 리다이렉트
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) router.push('/pickup')
+      if (session) router.push(`/pickup?store=${store}`)
     })
   }, [])
 
   const handleKakaoLogin = async () => {
     setLoading(true)
-    const { error } = await signInWithKakao()
+    const { error } = await signInWithKakao(store)
     if (error) {
       console.error('로그인 오류:', error)
       setLoading(false)
