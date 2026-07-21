@@ -1,7 +1,7 @@
 'use client'
 // app/pickup/my/applications/page.tsx - 내 신청 내역 (탭바 2번째)
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import CustomerLayout from '@/components/layout/CustomerLayout'
@@ -25,6 +25,14 @@ interface Application {
 }
 
 export default function ApplicationsPage() {
+  return (
+    <Suspense fallback={null}>
+      <ApplicationsPageInner />
+    </Suspense>
+  )
+}
+
+function ApplicationsPageInner() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const storeCode = searchParams.get('store') || 'hwajung'
