@@ -4,8 +4,6 @@
 
 import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
-import { encryptPhone, hashPhone } from '@/lib/crypto'
 
 export default function ProfilePage() {
   return (
@@ -46,39 +44,34 @@ function ProfilePageInner() {
     if (!validate()) return
     setLoading(true)
 
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { router.push('/auth/login'); return }
-
-    // 🔴 전화번호 암호화 저장
-    const encryptedPhone = encryptPhone(phone.trim())
-    const phoneHash = hashPhone(phone.trim()) // 검색용 해시
-
-    const { error } = await supabase
-      .from('user_profiles')
-      .upsert({
-        id: user.id,
-        name: name.trim(),
-        phone: encryptedPhone,       // 암호화된 전화번호 저장
-        phone_hash: phoneHash,        // 조회용 해시
-        is_profile_complete: true,
-        privacy_agreed_at: new Date().toISOString(),
-        service_agreed_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+    try {
+      const res = await fetch('/api/profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name.trim(), phone }),
       })
+      const result = await res.json()
 
-    if (error) {
-      // 전화번호 중복 확인
-      if (error.code === '23505') {
-        setErrors({ phone: '이미 등록된 전화번호입니다.' })
-      } else {
-        alert('저장 중 오류가 발생했습니다. 다시 시도해주세요.')
+      if (!res.ok) {
+        if (res.status === 401) {
+          router.push('/auth/login')
+          return
+        }
+        if (res.status === 409) {
+          setErrors({ phone: result.error })
+        } else {
+          alert(result.error || '저장 중 오류가 발생했습니다. 다시 시도해주세요.')
+        }
+        return
       }
-      setLoading(false)
-      return
-    }
 
-    const store = searchParams.get('store') || 'hwajung'
-    router.push(`/pickup?store=${store}`)
+      const store = searchParams.get('store') || 'hwajung'
+      router.push(`/pickup?store=${store}`)
+    } catch {
+      alert('네트워크 오류가 발생했습니다. 다시 시도해주세요.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const allAgreed = agreePrivacy && agreeService
