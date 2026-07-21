@@ -1,3 +1,5 @@
+'use client'
+
 // app/privacy/page.tsx
 // 🔴 개인정보 처리방침 페이지
 
