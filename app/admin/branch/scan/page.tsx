@@ -75,7 +75,7 @@ export default function ScanPage() {
     setResult({
       userName: userProfile.name,
       userPhone: phone,
-      applications: apps as AppItem[],
+      applications: apps as unknown as AppItem[],
     })
   }
 
