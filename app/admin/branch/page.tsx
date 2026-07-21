@@ -52,7 +52,6 @@ function ApplicationRow({ app, onPickedUp, onNoShow }: {
         <p className="text-xs text-gray-400">{app.quantity}개</p>
       </td>
       <td className="px-4 py-3">
-        <code className="text-xs bg-gray-100 px-2 py-1 rounded font-mono">{app.pickup_code}</code>
       </td>
       <td className="px-4 py-3">
         <span className={`text-xs px-2 py-1 rounded-full font-medium ${status.color}`}>
