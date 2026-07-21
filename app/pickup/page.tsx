@@ -216,12 +216,24 @@ export default function PickupPage() {
               <PenaltyBadge count={profile?.penalty_count || 0} />
             </div>
           </div>
-          <button
-            onClick={() => router.push('/pickup/my')}
-            className="text-sm text-orange-600 font-medium bg-orange-50 px-3 py-1.5 rounded-lg"
-          >
-            내 신청 내역
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => router.push('/pickup/my')}
+              className="text-sm text-orange-600 font-medium bg-orange-50 px-3 py-1.5 rounded-lg"
+            >
+              내 신청 내역
+            </button>
+            <button
+              onClick={async () => {
+                if (!confirm('로그아웃 하시겠습니까?')) return
+                await supabase.auth.signOut()
+                router.push('/auth/login')
+              }}
+              className="text-sm text-gray-500 font-medium bg-gray-50 px-3 py-1.5 rounded-lg"
+            >
+              로그아웃
+            </button>
+          </div>
         </div>
       </header>
 
