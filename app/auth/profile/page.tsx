@@ -2,12 +2,20 @@
 // app/auth/profile/page.tsx
 // 카카오 로그인 후 최초 1회 이름·전화번호 수집 + 개인정보 동의
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { encryptPhone, hashPhone } from '@/lib/crypto'
 
 export default function ProfilePage() {
+  return (
+    <Suspense fallback={null}>
+      <ProfilePageInner />
+    </Suspense>
+  )
+}
+
+function ProfilePageInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [name, setName] = useState('')
