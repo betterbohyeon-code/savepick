@@ -97,6 +97,7 @@ function ProductForm({ branchId, adminId, onClose, onSuccess }: {
     description: '',
     max_per_user: '1',
     round_id: '',
+    image_url: '',
   })
   const [rounds, setRounds] = useState<{ id: string; round_name: string; pickup_date: string }[]>([])
   const [saving, setSaving] = useState(false)
@@ -129,6 +130,7 @@ function ProductForm({ branchId, adminId, onClose, onSuccess }: {
       sale_price: parseInt(form.sale_price),
       total_quantity: parseInt(form.total_quantity),
       description: form.description || undefined,
+      image_url: form.image_url || undefined,
       max_per_user: parseInt(form.max_per_user),
       created_by: adminId,
     })
@@ -221,6 +223,24 @@ function ProductForm({ branchId, adminId, onClose, onSuccess }: {
                 className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
               />
             </div>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-gray-700 mb-1 block">상품 이미지 URL</label>
+            <input
+              value={form.image_url}
+              onChange={e => setForm(f => ({ ...f, image_url: e.target.value }))}
+              placeholder="https://... (이미지 주소, 선택)"
+              className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
+            />
+            {form.image_url && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={form.image_url}
+                alt="미리보기"
+                className="mt-2 w-20 h-20 object-cover rounded-xl border border-gray-200"
+                onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
+              />
+            )}
           </div>
           <div>
             <label className="text-sm font-medium text-gray-700 mb-1 block">설명</label>
