@@ -12,7 +12,6 @@ export async function getActiveProducts(branchId?: string) {
       round:pickup_rounds(*)
     `)
     .eq('is_active', true)
-    .gt('remaining_quantity', 0)
     .order('created_at', { ascending: false })
 
   if (branchId) {
