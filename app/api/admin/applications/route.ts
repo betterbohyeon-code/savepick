@@ -46,12 +46,7 @@ export async function GET(request: Request) {
   const service = createServiceClient()
   let query = service
     .from('pickup_applications')
-    .select(`
-      *,
-      user:user_profiles(name, phone),
-      product:products(name, image_url),
-      round:pickup_rounds(round_name, pickup_date)
-    `)
+    .select('*, product:products(name, image_url), round:pickup_rounds(round_name, pickup_date)')
     .order('applied_at', { ascending: false })
 
   if (admin.role === 'branch') {
@@ -66,10 +61,31 @@ export async function GET(request: Request) {
     query = query.eq('round_id', roundId)
   }
 
-  const { data, error } = await query
+  const { data: applications, error } = await query
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
+
+  // user_profiles는 자동 관계 조인 대신 별도 조회 후 코드에서 병합
+  // (스키마 캐시/관계 설정 이슈에 영향받지 않도록)
+  const userIds = Array.from(new Set((applications || []).map((a: any) => a.user_id).filter(Boolean)))
+  let usersById: Record<string, { name: string; phone: string }> = {}
+
+  if (userIds.length > 0) {
+    const { data: profiles } = await service
+      .from('user_profiles')
+      .select('id, name, phone')
+      .in('id', userIds)
+
+    usersById = Object.fromEntries(
+      (profiles || []).map((p: any) => [p.id, { name: p.name, phone: p.phone }])
+    )
+  }
+
+  const data = (applications || []).map((a: any) => ({
+    ...a,
+    user: usersById[a.user_id] || null,
+  }))
 
   return NextResponse.json({ data })
 }
