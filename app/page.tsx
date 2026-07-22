@@ -37,7 +37,7 @@ function SplashPageInner() {
   return (
     <MobileShell>
       <div
-        className="min-h-screen relative overflow-hidden flex flex-col items-center justify-center gap-4"
+        className="min-h-screen md:h-full md:min-h-0 relative overflow-hidden flex flex-col items-center justify-center gap-4"
         style={{ background: 'linear-gradient(160deg, oklch(0.68 0.17 48), var(--accent) 55%, oklch(0.56 0.19 30))' }}
       >
         <div className="absolute -top-16 -right-10 w-56 h-56 rounded-full bg-white/[.12] animate-[float1_6s_ease-in-out_infinite]" />
