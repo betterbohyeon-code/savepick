@@ -5,6 +5,15 @@ import { NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { createServiceClient } from '@/lib/supabase'
+import { decryptPhone } from '@/lib/crypto'
+
+function tryDecrypt(value: string): string {
+  try {
+    return decryptPhone(value)
+  } catch {
+    return '(복호화 실패)'
+  }
+}
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -78,7 +87,10 @@ export async function GET(request: Request) {
       .in('id', userIds)
 
     usersById = Object.fromEntries(
-      (profiles || []).map((p: any) => [p.id, { name: p.name, phone: p.phone }])
+      (profiles || []).map((p: any) => [
+        p.id,
+        { name: p.name, phone: p.phone ? tryDecrypt(p.phone) : p.phone },
+      ])
     )
   }
 
