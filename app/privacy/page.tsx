@@ -3,20 +3,31 @@
 // app/privacy/page.tsx
 // 🔴 개인정보 처리방침 페이지
 
+import { Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { getStoreName } from '@/lib/stores'
+import MobileShell from '@/components/layout/MobileShell'
+import CustomerHeader from '@/components/layout/CustomerHeader'
+
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-2xl mx-auto px-5 py-10">
-        {/* 헤더 */}
-        <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center">
-            <span className="text-white font-bold text-sm">SP</span>
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-gray-900">개인정보 처리방침</h1>
-            <p className="text-sm text-gray-500">세이브픽 (SavePick) · 최종 수정일: 2025년 1월 25일</p>
-          </div>
-        </div>
+    <Suspense fallback={null}>
+      <PrivacyPageInner />
+    </Suspense>
+  )
+}
+
+function PrivacyPageInner() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const store = searchParams.get('store') || 'hwajung'
+  const storeName = getStoreName(store)
+
+  return (
+    <MobileShell>
+      <div className="min-h-screen flex flex-col">
+        <CustomerHeader storeName={storeName} mode="back" onBack={() => router.back()} />
+      <div className="px-5 py-8">
 
         <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 mb-8">
           <p className="text-sm text-orange-800 leading-relaxed">
@@ -170,16 +181,11 @@ export default function PrivacyPage() {
 
         </div>
 
-        <div className="mt-10 pt-6 border-t border-gray-100 text-center">
-          <p className="text-xs text-gray-400">본 방침은 2025년 1월 25일부터 시행됩니다.</p>
-          <button
-            onClick={() => window.close()}
-            className="mt-4 px-6 py-2 bg-orange-500 text-white font-bold rounded-xl text-sm"
-          >
-            확인
-          </button>
+        <div className="mt-10 pt-6 border-t border-line text-center">
+          <p className="text-xs text-ink-soft">본 방침은 2025년 1월 25일부터 시행됩니다.</p>
         </div>
       </div>
-    </div>
+      </div>
+    </MobileShell>
   )
 }
