@@ -101,9 +101,9 @@ function ApplyModal({ product, onConfirm, onClose }: {
   const total = qty * product.sale_price
 
   return (
-    <div className="fixed inset-0 z-50">
+    <div className="absolute inset-0 z-50">
       <div onClick={onClose} className="absolute inset-0 bg-black/40" />
-      <div className="absolute left-0 right-0 bottom-0 mx-auto max-w-[430px] bg-surface rounded-t-[24px] p-5 pb-7 flex flex-col gap-4 shadow-2xl">
+      <div className="absolute left-0 right-0 bottom-0 mx-auto max-w-[480px] bg-surface rounded-t-[24px] p-5 pb-7 flex flex-col gap-4 shadow-2xl">
         <div className="w-9 h-1 rounded-full bg-line mx-auto" />
         <div className="flex gap-3.5 items-center">
           <div className="w-[72px] h-[72px] flex-none rounded-2xl bg-[repeating-linear-gradient(45deg,#e4ded2,#e4ded2_8px,#dbd4c6_8px,#dbd4c6_16px)] overflow-hidden">
@@ -393,7 +393,7 @@ function PickupPageInner() {
         {appliedItems.length > 0 && (
           <button
             onClick={() => setSheetOpen(true)}
-            className="fixed left-1/2 -translate-x-1/2 bottom-5 bg-accent text-white rounded-full px-5 py-3 text-[13px] font-bold flex items-center gap-2 shadow-2xl z-10 whitespace-nowrap"
+            className="absolute left-1/2 -translate-x-1/2 bottom-5 bg-accent text-white rounded-full px-5 py-3 text-[13px] font-bold flex items-center gap-2 shadow-2xl z-10 whitespace-nowrap"
             style={{ boxShadow: '0 16px 40px rgba(0,0,0,.4), 0 4px 14px rgba(0,0,0,.3)' }}
           >
             🎫 오늘 신청 {appliedItems.length}건 보기
@@ -401,9 +401,9 @@ function PickupPageInner() {
         )}
 
         {sheetOpen && (
-          <div className="fixed inset-0 z-30">
+          <div className="absolute inset-0 z-30">
             <div onClick={() => setSheetOpen(false)} className="absolute inset-0 bg-black/40" />
-            <div className="absolute left-0 right-0 bottom-0 mx-auto max-w-[430px] max-h-[70%] overflow-y-auto bg-surface rounded-t-[24px] p-5 pb-6 flex flex-col gap-3.5 shadow-2xl">
+            <div className="absolute left-0 right-0 bottom-0 mx-auto max-w-[480px] max-h-[70%] overflow-y-auto bg-surface rounded-t-[24px] p-5 pb-6 flex flex-col gap-3.5 shadow-2xl">
               <div className="w-9 h-1 rounded-full bg-line mx-auto" />
               <div className="font-bold text-[15px] text-ink">오늘 신청 내역</div>
               {groupedApplied.map(grp => (
@@ -432,7 +432,7 @@ function PickupPageInner() {
         )}
 
         {toast && (
-          <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 px-5 py-3 rounded-2xl text-white text-sm font-medium shadow-lg z-50 whitespace-nowrap ${
+          <div className={`absolute bottom-6 left-1/2 -translate-x-1/2 px-5 py-3 rounded-2xl text-white text-sm font-medium shadow-lg z-50 whitespace-nowrap ${
             toast.type === 'success' ? 'bg-good' : 'bg-danger'
           }`}>
             {toast.msg}
