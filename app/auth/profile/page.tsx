@@ -84,7 +84,7 @@ function ProfilePageInner() {
   return (
     <MobileShell>
       <div className="min-h-screen flex flex-col">
-        <CustomerHeader storeName={storeName} mode="back" onBack={() => router.back()} />
+        <CustomerHeader storeName={storeName} onBack={() => router.back()} />
 
         <div className="px-6 pt-4">
           <h1 className="text-xl font-extrabold text-ink">프로필 입력</h1>
