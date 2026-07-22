@@ -26,7 +26,7 @@ function TermsPageInner() {
   return (
     <MobileShell>
       <div className="min-h-screen flex flex-col">
-        <CustomerHeader storeName={storeName} mode="back" onBack={() => router.back()} />
+        <CustomerHeader storeName={storeName} onBack={() => router.back()} />
         <div className="px-5 py-8">
           <div className="mb-8">
             <h1 className="text-xl font-bold text-ink">이용약관</h1>
