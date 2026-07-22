@@ -1,8 +1,8 @@
 'use client'
 // app/pickup/page.tsx - 고객용 픽업 상품 목록 페이지
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { Suspense, useEffect, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { getActiveProducts, applyPickup } from '@/lib/pickup'
 import { getUserProfile, checkUserBanStatus } from '@/lib/auth'
@@ -123,7 +123,17 @@ function ApplyModal({ product, onConfirm, onClose }: {
 }
 
 export default function PickupPage() {
+  return (
+    <Suspense fallback={null}>
+      <PickupPageInner />
+    </Suspense>
+  )
+}
+
+function PickupPageInner() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const store = searchParams.get('store') || 'hwajung'
   const [products, setProducts] = useState<Product[]>([])
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
@@ -142,13 +152,13 @@ export default function PickupPage() {
     const init = async () => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
-        router.push('/auth/login')
+        router.push(`/auth/login?store=${store}`)
         return
       }
 
       const prof = await getUserProfile(user.id)
       if (!prof?.is_profile_complete) {
-        router.push('/auth/profile')
+        router.push(`/auth/profile?store=${store}`)
         return
       }
       setProfile(prof)
@@ -156,12 +166,18 @@ export default function PickupPage() {
       const banStatus = await checkUserBanStatus(user.id)
       setIsBanned(banStatus.isBanned)
 
-      const { data } = await getActiveProducts()
+      const { data: branch } = await supabase
+        .from('branches')
+        .select('id')
+        .eq('code', store)
+        .single()
+
+      const { data } = await getActiveProducts(branch?.id)
       setProducts(data || [])
       setLoading(false)
     }
     init()
-  }, [])
+  }, [store])
 
   const handleApply = async () => {
     if (!selectedProduct) return
@@ -183,7 +199,7 @@ export default function PickupPage() {
     if (error) {
       showToast('error', error)
     } else {
-      showToast('success', `신청 완료! 픽업코드: ${data?.pickup_code}`)
+      showToast('success', '신청 완료! 매장 방문 시 전화번호로 조회하시면 돼요.')
       // 재고 업데이트
       setProducts(prev => prev.map(p =>
         p.id === selectedProduct.id
