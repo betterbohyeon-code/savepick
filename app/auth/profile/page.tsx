@@ -1,9 +1,12 @@
 'use client'
 // app/auth/profile/page.tsx
-// 카카오 로그인 후 최초 1회 이름·전화번호 수집 + 개인정보 동의
+// 카카오 로그인 후 최초 1회 이름·전화번호 수집 + 개인정보 동의 (SAVE PICK v2 디자인)
 
 import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { getStoreName } from '@/lib/stores'
+import MobileShell from '@/components/layout/MobileShell'
+import CustomerHeader from '@/components/layout/CustomerHeader'
 
 export default function ProfilePage() {
   return (
@@ -16,6 +19,8 @@ export default function ProfilePage() {
 function ProfilePageInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const store = searchParams.get('store') || 'hwajung'
+  const storeName = getStoreName(store)
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [agreePrivacy, setAgreePrivacy] = useState(false)
@@ -54,7 +59,7 @@ function ProfilePageInner() {
 
       if (!res.ok) {
         if (res.status === 401) {
-          router.push('/auth/login')
+          router.push(`/auth/login?store=${store}`)
           return
         }
         if (res.status === 409) {
@@ -65,7 +70,6 @@ function ProfilePageInner() {
         return
       }
 
-      const store = searchParams.get('store') || 'hwajung'
       router.push(`/pickup?store=${store}`)
     } catch {
       alert('네트워크 오류가 발생했습니다. 다시 시도해주세요.')
@@ -78,137 +82,115 @@ function ProfilePageInner() {
   const isValid = name.trim().length >= 2 && phone.length >= 12 && allAgreed
 
   return (
-    <div className="min-h-screen bg-orange-500 flex flex-col">
-      <div className="flex-1 flex flex-col items-center justify-center px-6 pb-4">
-        <h1 className="text-5xl font-bold text-white tracking-tight mb-2">SAVE PICK</h1>
-        <p className="text-white/70 text-base">세이브존 픽업 서비스</p>
-      </div>
+    <MobileShell>
+      <div className="min-h-screen flex flex-col">
+        <CustomerHeader storeName={storeName} mode="back" onBack={() => router.back()} />
 
-      <div className="bg-white rounded-t-3xl px-6 pt-7 pb-10">
-        {/* 진행 단계 */}
-        <div className="flex items-center gap-2 mb-7">
-          <div className="w-2 h-2 rounded-full bg-orange-500" />
-          <div className="flex-1 h-0.5 bg-orange-500" />
-          <div className="w-2 h-2 rounded-full bg-gray-200" />
+        <div className="px-6 pt-4">
+          <h1 className="text-xl font-extrabold text-ink">프로필 입력</h1>
+          <p className="text-[13px] text-ink-soft mt-1">픽업 신청을 위해 정보를 알려주세요</p>
         </div>
 
-        <div className="text-center mb-5">
-          <div className="w-14 h-14 bg-orange-50 rounded-full flex items-center justify-center text-3xl mx-auto mb-3">👤</div>
-          <h2 className="text-xl font-bold text-gray-900 mb-1">정보를 입력해주세요</h2>
-          <p className="text-sm text-gray-500 leading-relaxed">
-            매장 방문 시 신청 확인에 사용됩니다<br />최초 1회만 입력하면 됩니다
-          </p>
-        </div>
+        <div className="flex-1 px-6 py-5 flex flex-col gap-4">
+          {/* 픽업 지점 (읽기 전용) */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-semibold text-ink">픽업 지점</label>
+            <div className="h-[50px] border border-line rounded-2xl bg-bg px-4 flex items-center justify-between">
+              <span className="text-sm font-bold text-ink">{storeName}</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--ink-soft)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="4" y="11" width="16" height="9" rx="2" />
+                <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+              </svg>
+            </div>
+            <p className="text-[11.5px] text-ink-soft leading-tight">접속하신 지점으로 자동 설정돼요</p>
+          </div>
 
-        {/* 카카오 연동 표시 */}
-        <div className="flex items-center gap-2 bg-gray-50 rounded-xl px-4 py-3 mb-5">
-          <span className="bg-yellow-400 text-gray-900 text-xs font-bold px-2 py-0.5 rounded">카카오</span>
-          <span className="text-sm text-gray-500">카카오 로그인 완료</span>
-        </div>
-
-        {/* 이름 */}
-        <div className="mb-4">
-          <label className="block text-sm font-bold text-gray-900 mb-2">
-            이름 <span className="text-orange-500">*</span>
-          </label>
-          <input
-            type="text"
-            value={name}
-            onChange={e => setName(e.target.value)}
-            placeholder="실명을 입력해주세요"
-            className="w-full px-4 py-3.5 border border-gray-200 rounded-xl text-base focus:outline-none focus:border-orange-500"
-          />
-          {errors.name && <p className="text-red-500 text-xs mt-1.5">{errors.name}</p>}
-          <p className="text-xs text-gray-400 mt-1.5">매장 직원이 확인하는 이름입니다</p>
-        </div>
-
-        {/* 전화번호 */}
-        <div className="mb-5">
-          <label className="block text-sm font-bold text-gray-900 mb-2">
-            전화번호 <span className="text-orange-500">*</span>
-          </label>
-          <div className="flex gap-2">
-            <div className="w-20 px-3 py-3.5 border border-gray-200 rounded-xl text-center text-sm text-gray-500 bg-gray-50">+82</div>
+          {/* 이름 */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-semibold text-ink">이름</label>
             <input
-              type="tel"
-              value={phone}
-              onChange={e => setPhone(formatPhone(e.target.value))}
-              placeholder="010-0000-0000"
-              maxLength={13}
-              className="flex-1 px-4 py-3.5 border border-gray-200 rounded-xl text-base focus:outline-none focus:border-orange-500"
+              type="text"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              placeholder="실명을 입력해주세요"
+              className="h-[50px] border border-line rounded-2xl bg-surface px-4 text-sm focus:outline-none focus:border-accent"
             />
+            {errors.name && <p className="text-danger text-xs">{errors.name}</p>}
+            <p className="text-[11.5px] text-ink-soft leading-tight">매장 직원이 확인하는 이름입니다</p>
           </div>
-          {errors.phone && <p className="text-red-500 text-xs mt-1.5">{errors.phone}</p>}
-          <p className="text-xs text-gray-400 mt-1.5">픽업 확인 및 연락에 사용됩니다</p>
-        </div>
 
-        {/* 🔴 개인정보 동의 */}
-        <div className="bg-gray-50 rounded-xl p-4 mb-5 space-y-3">
-          <p className="text-xs font-bold text-gray-700 mb-3">약관 동의</p>
-
-          {/* 전체 동의 */}
-          <label className="flex items-center gap-3 cursor-pointer">
-            <div
-              onClick={() => { setAgreePrivacy(!allAgreed); setAgreeService(!allAgreed) }}
-              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${allAgreed ? 'bg-orange-500 border-orange-500' : 'border-gray-300'}`}
-            >
-              {allAgreed && <span className="text-white text-xs">✓</span>}
+          {/* 전화번호 */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-semibold text-ink">전화번호</label>
+            <div className="flex gap-2">
+              <div className="h-[50px] w-[52px] flex-none border border-line rounded-2xl bg-bg flex items-center justify-center text-[13px] font-semibold text-ink-soft">+82</div>
+              <input
+                type="tel"
+                value={phone}
+                onChange={e => setPhone(formatPhone(e.target.value))}
+                placeholder="10-1234-5678"
+                maxLength={13}
+                className="flex-1 h-[50px] border border-line rounded-2xl bg-surface px-4 text-sm focus:outline-none focus:border-accent"
+              />
             </div>
-            <span className="text-sm font-bold text-gray-900">전체 동의</span>
-          </label>
+            {errors.phone && <p className="text-danger text-xs">{errors.phone}</p>}
+            <p className="text-[11.5px] text-ink-soft leading-tight">픽업 확인 및 연락에 사용됩니다</p>
+          </div>
 
-          <div className="border-t border-gray-200 pt-3 space-y-3">
-            {/* 개인정보 동의 */}
-            <div className="flex items-start gap-3">
-              <div
+          {/* 안내 박스 */}
+          <div className="bg-accent-soft rounded-2xl px-4 py-3.5 text-[12.5px] leading-relaxed text-ink">
+            픽업 시 이 번호로 매장에서 조회해요. 노쇼(미수령) 3회 누적 시 90일간 픽업 신청이 제한되니 예약 후 꼭 방문해주세요.
+          </div>
+
+          {/* 약관 동의 */}
+          <div className="flex flex-col gap-3 mt-1">
+            <label className="flex items-center gap-2.5 py-3.5 px-1 border-b border-line cursor-pointer">
+              <span
+                onClick={() => { setAgreePrivacy(!allAgreed); setAgreeService(!allAgreed) }}
+                className={`w-5 h-5 rounded-md flex-none flex items-center justify-center transition-colors ${allAgreed ? 'bg-ink' : 'bg-surface border border-line'}`}
+              >
+                {allAgreed && <span className="text-white text-[11px]">✓</span>}
+              </span>
+              <span className="text-[13.5px] font-bold text-ink">전체 동의합니다</span>
+            </label>
+
+            <div className="flex items-center gap-2.5 px-1">
+              <span
                 onClick={() => setAgreePrivacy(!agreePrivacy)}
-                className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 mt-0.5 cursor-pointer transition-colors ${agreePrivacy ? 'bg-orange-500 border-orange-500' : 'border-gray-300'}`}
+                className={`w-[18px] h-[18px] rounded-[5px] flex-none flex items-center justify-center cursor-pointer transition-colors ${agreePrivacy ? 'bg-ink' : 'border-[1.5px] border-line'}`}
               >
-                {agreePrivacy && <span className="text-white text-xs">✓</span>}
-              </div>
-              <div className="flex-1">
-                <p className="text-sm text-gray-700">
-                  <span className="text-orange-500 font-bold">[필수]</span> 개인정보 수집 및 이용 동의
-                </p>
-                <p className="text-xs text-gray-400 mt-0.5">이름, 전화번호 수집 · 픽업 서비스 제공 목적 · 서비스 종료 시 삭제</p>
-                <button
-                  onClick={() => window.open('/privacy', '_blank')}
-                  className="text-xs text-orange-500 underline mt-1"
-                >
-                  개인정보 처리방침 보기
-                </button>
-              </div>
+                {agreePrivacy && <span className="text-white text-[10px]">✓</span>}
+              </span>
+              <span className="text-[13px] text-ink-soft flex-1">[필수] 개인정보 처리방침 동의</span>
+              <button onClick={() => window.open('/privacy', '_blank')} className="text-xs text-ink-soft">보기</button>
             </div>
 
-            {/* 서비스 이용약관 */}
-            <div className="flex items-start gap-3">
-              <div
+            <div className="flex items-center gap-2.5 px-1">
+              <span
                 onClick={() => setAgreeService(!agreeService)}
-                className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 mt-0.5 cursor-pointer transition-colors ${agreeService ? 'bg-orange-500 border-orange-500' : 'border-gray-300'}`}
+                className={`w-[18px] h-[18px] rounded-[5px] flex-none flex items-center justify-center cursor-pointer transition-colors ${agreeService ? 'bg-ink' : 'border-[1.5px] border-line'}`}
               >
-                {agreeService && <span className="text-white text-xs">✓</span>}
-              </div>
-              <div className="flex-1">
-                <p className="text-sm text-gray-700">
-                  <span className="text-orange-500 font-bold">[필수]</span> 서비스 이용약관 동의
-                </p>
-                <p className="text-xs text-gray-400 mt-0.5">노쇼 3회 누적 시 90일 이용 제한 정책 포함</p>
-              </div>
+                {agreeService && <span className="text-white text-[10px]">✓</span>}
+              </span>
+              <span className="text-[13px] text-ink-soft flex-1">[필수] 이용약관 동의</span>
+              <button onClick={() => window.open('/terms', '_blank')} className="text-xs text-ink-soft">보기</button>
             </div>
-          </div>
 
-          {errors.privacy && <p className="text-red-500 text-xs">{errors.privacy}</p>}
-          {errors.service && <p className="text-red-500 text-xs">{errors.service}</p>}
+            {errors.privacy && <p className="text-danger text-xs px-1">{errors.privacy}</p>}
+            {errors.service && <p className="text-danger text-xs px-1">{errors.service}</p>}
+          </div>
         </div>
 
-        <button
-          onClick={handleSubmit}
-          disabled={loading || !isValid}
-          className="w-full py-4 bg-orange-500 text-white font-bold text-lg rounded-2xl disabled:bg-gray-200 disabled:text-gray-400 transition-colors"
-        >
-          {loading ? '저장 중...' : '세이브픽 시작하기'}
-        </button>
+        <div className="px-6 pb-6">
+          <button
+            onClick={handleSubmit}
+            disabled={loading || !isValid}
+            className="w-full h-[54px] bg-accent text-white font-bold text-[15px] rounded-2xl disabled:opacity-40 transition-opacity"
+          >
+            {loading ? '저장 중...' : '시작하기'}
+          </button>
+        </div>
       </div>
-    </div>
+    </MobileShell>
   )
 }
