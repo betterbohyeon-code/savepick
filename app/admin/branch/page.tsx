@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { getAdminInfo } from '@/lib/auth'
-import { getBranchApplications, markPickedUp, markNoShow, createProduct } from '@/lib/pickup'
+import { markPickedUp, markNoShow, createProduct } from '@/lib/pickup'
 import type { Admin, PickupApplication } from '@/types'
 
 type TabType = 'applications' | 'products' | 'rounds'
@@ -347,8 +347,13 @@ export default function BranchAdminPage() {
       setAdmin(adminInfo)
 
       if (adminInfo.branch_id) {
-        const { data } = await getBranchApplications(adminInfo.branch_id)
-        setApplications(data || [])
+        try {
+          const res = await fetch('/api/admin/applications')
+          const result = await res.json()
+          setApplications(result.data || [])
+        } catch {
+          setApplications([])
+        }
       }
       setLoading(false)
     }
