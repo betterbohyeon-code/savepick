@@ -79,7 +79,7 @@ function KakaoVerifyInner() {
   }, [])
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-3 bg-white">
+    <div className="min-h-screen md:h-full md:min-h-0 flex flex-col items-center justify-center gap-3 bg-white">
       <div className="w-8 h-8 border-3 border-orange-500 border-t-transparent rounded-full animate-spin" />
       <p className="text-gray-500 text-sm">{error || '로그인 처리 중...'}</p>
     </div>
