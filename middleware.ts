@@ -47,7 +47,7 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  if (pathname.startsWith('/auth/login') && req.method === 'POST') {
+  if ((pathname.startsWith('/auth/login') || pathname.startsWith('/admin/login')) && req.method === 'POST') {
     if (!rateLimit(ip + ':login', 10, 60_000)) {
       return NextResponse.json(
         { error: '로그인 시도가 너무 많습니다. 1분 후 다시 시도해주세요.' },
@@ -57,7 +57,7 @@ export async function middleware(req: NextRequest) {
   }
 
   const needsAuth =
-    pathname.startsWith('/admin') ||
+    (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) ||
     (pathname.startsWith('/pickup') && !pathname.startsWith('/pickup/public'))
 
   if (!needsAuth) {
@@ -93,13 +93,13 @@ export async function middleware(req: NextRequest) {
   // ── 3. 어드민 서버사이드 인증 ──
   if (pathname.startsWith('/admin')) {
     if (!session) {
-      return NextResponse.redirect(new URL('/auth/login', req.url))
+      return NextResponse.redirect(new URL('/admin/login', req.url))
     }
 
     const admin = await getAdminRole(supabase, session.user.id)
 
     if (!admin) {
-      return NextResponse.redirect(new URL('/auth/login?error=unauthorized', req.url))
+      return NextResponse.redirect(new URL('/admin/login?error=unauthorized', req.url))
     }
 
     if (pathname.startsWith('/admin/master') && admin.role !== 'master') {
