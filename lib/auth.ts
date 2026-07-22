@@ -30,14 +30,16 @@ export async function getSession() {
   return session
 }
 
-// 사용자 프로필 조회
+// 사용자 프로필 조회 (전화번호 복호화된 값 반환 - /api/profile/me 경유)
 export async function getUserProfile(userId: string): Promise<UserProfile | null> {
-  const { data } = await supabase
-    .from('user_profiles')
-    .select('*')
-    .eq('id', userId)
-    .single()
-  return data
+  try {
+    const res = await fetch('/api/profile/me')
+    if (!res.ok) return null
+    const { data } = await res.json()
+    return data
+  } catch {
+    return null
+  }
 }
 
 // 프로필 생성/업데이트 (최초 1회)
