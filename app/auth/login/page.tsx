@@ -35,7 +35,7 @@ function LoginPageInner() {
 
   return (
     <MobileShell>
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen md:h-full md:min-h-0 flex flex-col">
         <div className="flex-1 flex flex-col items-center justify-center px-8 gap-7 text-center">
           <div className="flex items-center gap-1.5 px-3.5 py-1.5 bg-accent-soft rounded-full text-accent text-xs font-semibold whitespace-nowrap">
             <span className="w-1.5 h-1.5 rounded-full bg-accent" />
