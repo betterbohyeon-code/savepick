@@ -135,7 +135,7 @@ function MyPageInner() {
   return (
     <MobileShell>
       <div className="min-h-screen flex flex-col">
-        <CustomerHeader storeName={storeName} mode="main" onMenu={() => setDrawerOpen(true)} sticky />
+        <CustomerHeader storeName={storeName} onBack={() => router.push(`/pickup?store=${store}`)} onMenu={() => setDrawerOpen(true)} sticky />
 
         <div className="px-6 pt-4">
           <div className="bg-surface border border-line rounded-[18px] p-[18px] flex flex-col gap-2.5">
