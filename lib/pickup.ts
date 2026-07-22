@@ -87,7 +87,7 @@ export async function getMyApplications(userId: string) {
     .from('pickup_applications')
     .select(`
       *,
-      product:products(name, image_url, sale_price),
+      product:products(name, image_url, original_price, sale_price),
       branch:branches(name),
       round:pickup_rounds(pickup_date, pickup_start_time, pickup_end_time)
     `)
