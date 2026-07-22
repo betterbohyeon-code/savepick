@@ -309,7 +309,7 @@ function PickupPageInner() {
     <MobileShell>
       <div className="min-h-screen flex flex-col relative">
         <div className="sticky top-0 z-20">
-          <CustomerHeader storeName={storeName} mode="main" onMenu={() => setDrawerOpen(true)} />
+          <CustomerHeader storeName={storeName} onMenu={() => setDrawerOpen(true)} />
           <div className="flex gap-2 overflow-x-auto px-5 py-3" style={{ background: 'oklch(0.6 0.17 35)' }}>
             {dateTabs.map(tab => {
               const active = tab.key === selectedDate
@@ -343,9 +343,14 @@ function PickupPageInner() {
         {productsForDate.length > 0 ? (
           <>
             <div className="px-5 pt-3.5 flex flex-col gap-2.5">
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-lg font-extrabold text-ink">{selectedTab?.month}/{selectedTab?.day}({selectedTab?.weekday})</span>
-                <span className="text-[13px] font-bold text-accent">상품 {productsForDate.length}개</span>
+              <div className="flex items-center justify-between">
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-lg font-extrabold text-ink">{selectedTab?.month}/{selectedTab?.day}({selectedTab?.weekday})</span>
+                  <span className="text-[13px] font-bold text-accent">상품 {productsForDate.length}개</span>
+                </div>
+                <button className="flex-none flex items-center gap-1 bg-transparent border border-line rounded-[9px] px-2.5 py-[7px] text-xs font-semibold text-ink">
+                  추천순<span className="text-[8px] text-ink-soft">▼</span>
+                </button>
               </div>
               {sampleRound?.pickup_start_time && (
                 <div className="flex items-center gap-2.5 px-3.5 py-3 bg-accent-soft rounded-xl">
@@ -369,8 +374,16 @@ function PickupPageInner() {
           </>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center gap-4 px-8 pb-24 text-center">
-            <div className="w-[72px] h-[72px] rounded-2xl bg-surface border border-line flex items-center justify-center">
-              <span className="text-3xl">🛍️</span>
+            <div className="w-[104px] h-[104px] rounded-full bg-accent-soft flex items-center justify-center">
+              <div className="relative" style={{ width: 52, height: 46 }}>
+                <div className="absolute bg-accent" style={{ bottom: 0, left: 2, right: 2, height: 32, borderRadius: '4px 4px 9px 9px', clipPath: 'polygon(0 0, 100% 0, 88% 100%, 12% 100%)' }} />
+                <div className="absolute bg-white/55 rounded-sm" style={{ bottom: 9, left: 14, width: 3, height: 16 }} />
+                <div className="absolute bg-white/55 rounded-sm" style={{ bottom: 9, left: '50%', transform: 'translateX(-50%)', width: 3, height: 16 }} />
+                <div className="absolute bg-white/55 rounded-sm" style={{ bottom: 9, right: 14, width: 3, height: 16 }} />
+                <div className="absolute bg-accent rounded" style={{ top: 6, left: 0, right: 0, height: 9 }} />
+                <div className="absolute border-accent" style={{ top: 0, left: 11, width: 16, height: 16, borderWidth: 3, borderBottomStyle: 'none', borderRightStyle: 'none' as any, borderStyle: 'solid', borderBottom: 'none', borderRight: 'none', borderRadius: '12px 0 0 0', transform: 'rotate(35deg)' }} />
+                <div className="absolute border-accent" style={{ top: 0, right: 11, width: 16, height: 16, borderWidth: 3, borderStyle: 'solid', borderBottom: 'none', borderLeft: 'none', borderRadius: '0 12px 0 0', transform: 'rotate(-35deg)' }} />
+              </div>
             </div>
             <p className="font-bold text-[15px] text-ink">이 날짜에 픽업 가능한 상품이 없어요</p>
             <p className="text-[13px] text-ink-soft leading-relaxed">다른 날짜를 선택하거나<br />새로운 특가가 열리면 알려드릴게요</p>
