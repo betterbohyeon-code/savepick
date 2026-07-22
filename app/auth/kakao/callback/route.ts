@@ -5,6 +5,9 @@ import { NextResponse } from 'next/server'
 import { getKakaoBranch, getKakaoClientSecret } from '@/lib/kakao-branches'
 import { createServiceClient } from '@/lib/supabase'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
@@ -55,53 +58,39 @@ export async function GET(request: Request) {
     const compositeKakaoId = `${branch.code}_${kakaoId}`
     const supabaseAdmin = createServiceClient()
 
-    // 3. 기존 사용자 조회 (user_profiles.kakao_id 기준)
+    // 3. 기존 프로필 조회 (user_profiles.kakao_id 기준)
     const { data: existingProfile } = await supabaseAdmin
       .from('user_profiles')
       .select('id')
       .eq('kakao_id', compositeKakaoId)
       .maybeSingle()
 
-    let userId: string
     let authEmail: string
-
     if (existingProfile) {
-      userId = existingProfile.id
-      const { data: existingUser } = await supabaseAdmin.auth.admin.getUserById(userId)
+      const { data: existingUser } = await supabaseAdmin.auth.admin.getUserById(existingProfile.id)
       authEmail = existingUser.user?.email || `kakao.${compositeKakaoId}@savepick.internal`
     } else {
-      // 지점+카카오ID로 스코프된 합성 이메일 (Supabase Auth 고유 식별자 용도)
-      const syntheticEmail = `kakao.${compositeKakaoId}@savepick.internal`
-      const { data: created, error: createError } = await supabaseAdmin.auth.admin.createUser({
-        email: syntheticEmail,
-        email_confirm: true,
-        user_metadata: { kakao_id: compositeKakaoId, branch: branch.code },
-      })
-
-      if (createError || !created.user) {
-        console.error('[kakao/callback] createUser error:', JSON.stringify(createError))
-        return NextResponse.redirect(new URL(`/auth/login?store=${branch.code}&error=account_create`, request.url))
-      }
-
-      userId = created.user.id
-      authEmail = syntheticEmail
-
-      await supabaseAdmin.from('user_profiles').insert({
-        id: userId,
-        kakao_id: compositeKakaoId,
-        is_profile_complete: false,
-      })
+      authEmail = `kakao.${compositeKakaoId}@savepick.internal`
     }
 
-    // 4. 매직링크 발급 (브라우저에서 verifyOtp로 세션 확정)
+    // 4. 매직링크 발급 - 계정이 없으면 자동 생성, 있으면 재사용 (경쟁 상태/고아 계정 문제 회피)
     const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
       type: 'magiclink',
       email: authEmail,
     })
 
-    if (linkError || !linkData?.properties?.hashed_token) {
+    if (linkError || !linkData?.properties?.hashed_token || !linkData.user) {
       console.error('[kakao/callback] generateLink error:', JSON.stringify(linkError))
       return NextResponse.redirect(new URL(`/auth/login?store=${branch.code}&error=session`, request.url))
+    }
+
+    // 신규 계정이면 프로필 행 생성
+    if (!existingProfile) {
+      await supabaseAdmin.from('user_profiles').upsert({
+        id: linkData.user.id,
+        kakao_id: compositeKakaoId,
+        is_profile_complete: false,
+      }, { onConflict: 'id' })
     }
 
     const verifyUrl = new URL('/auth/kakao/verify', request.url)
