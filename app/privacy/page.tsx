@@ -26,7 +26,7 @@ function PrivacyPageInner() {
   return (
     <MobileShell>
       <div className="min-h-screen flex flex-col">
-        <CustomerHeader storeName={storeName} mode="back" onBack={() => router.back()} />
+        <CustomerHeader storeName={storeName} onBack={() => router.back()} />
       <div className="px-5 py-8">
 
         <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 mb-8">
