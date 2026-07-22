@@ -11,7 +11,7 @@
 export default function MobileShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen md:h-screen md:overflow-hidden flex justify-center bg-[#E8E4DA]">
-      <div className="w-full max-w-[480px] min-h-screen md:h-[75vh] md:min-h-0 md:my-[12.5vh] md:overflow-y-auto md:[zoom:1.3333] bg-bg relative md:shadow-2xl">
+      <div className="w-full max-w-[480px] min-h-screen md:h-[75vh] md:min-h-0 md:overflow-y-auto md:[zoom:1.3333] bg-bg relative md:shadow-2xl">
         {children}
       </div>
     </div>
