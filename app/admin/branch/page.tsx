@@ -2,6 +2,7 @@
 // app/admin/branch/page.tsx - 지점 관리자 대시보드
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { getAdminInfo } from '@/lib/auth'
 import { getBranchApplications, markPickedUp, markNoShow, createProduct } from '@/lib/pickup'
@@ -214,6 +215,7 @@ function ProductForm({ branchId, adminId, onClose, onSuccess }: {
 }
 
 export default function BranchAdminPage() {
+  const router = useRouter()
   const [admin, setAdmin] = useState<Admin | null>(null)
   const [applications, setApplications] = useState<PickupApplication[]>([])
   const [loading, setLoading] = useState(true)
@@ -284,12 +286,24 @@ export default function BranchAdminPage() {
             <h1 className="font-bold text-gray-900 text-xl">세이브존 어드민</h1>
             <p className="text-sm text-gray-500">{admin?.branch?.name} | {admin?.name}</p>
           </div>
-          <button
-            onClick={() => setShowProductForm(true)}
-            className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-colors"
-          >
-            + 상품 등록
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={async () => {
+                if (!confirm('로그아웃 하시겠습니까?')) return
+                await supabase.auth.signOut()
+                router.push('/admin/login')
+              }}
+              className="text-sm text-gray-500 font-medium bg-gray-50 hover:bg-gray-100 px-3 py-2 rounded-xl"
+            >
+              로그아웃
+            </button>
+            <button
+              onClick={() => setShowProductForm(true)}
+              className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-colors"
+            >
+              + 상품 등록
+            </button>
+          </div>
         </div>
       </header>
 
