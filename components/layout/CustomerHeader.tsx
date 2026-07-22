@@ -1,17 +1,14 @@
 // components/layout/CustomerHeader.tsx
 // 🔴 고객용 공통 헤더 — SAVE PICK 로고 + 지점명, 오렌지 배경
-// mode="main": 알림벨 + 햄버거 메뉴 (픽업 목록, 마이페이지 등)
-// mode="back": 뒤로가기 버튼 (프로필입력, 정보수정, 약관 등 하위 화면)
+// onBack이 있으면 뒤로가기 버튼, onMenu가 있으면 전화문의+햄버거 메뉴 (둘 다 있으면 둘 다 표시)
 
 export default function CustomerHeader({
   storeName,
-  mode = 'main',
   onBack,
   onMenu,
   sticky = false,
 }: {
   storeName: string
-  mode?: 'main' | 'back'
   onBack?: () => void
   onMenu?: () => void
   sticky?: boolean
@@ -19,10 +16,10 @@ export default function CustomerHeader({
   return (
     <div
       className={`flex-none bg-accent flex items-center justify-between gap-3 ${sticky ? 'sticky top-0 z-20' : ''}`}
-      style={{ padding: mode === 'back' ? '18px 20px 16px' : '16px 20px 12px' }}
+      style={{ padding: onBack ? '18px 20px 16px' : '16px 20px 12px' }}
     >
       <div className="flex items-center gap-2.5">
-        {mode === 'back' && (
+        {onBack && (
           <button
             onClick={onBack}
             className="w-8 h-8 flex-none rounded-[9px] bg-white/[.18] flex items-center justify-center text-white text-lg font-bold"
@@ -36,7 +33,7 @@ export default function CustomerHeader({
         </div>
       </div>
 
-      {mode === 'main' && (
+      {onMenu && (
         <div className="flex items-center gap-1.5">
           <button className="w-[34px] h-[34px] rounded-[10px] bg-white/[.18] flex items-center justify-center">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
