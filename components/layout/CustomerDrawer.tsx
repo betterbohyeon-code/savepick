@@ -25,7 +25,7 @@ export default function CustomerDrawer({ open, onClose, name, phone, penaltyCoun
   const dots = [0, 1, 2].map(i => i < penaltyCount)
 
   return (
-    <div className="fixed inset-0 z-40">
+    <div className="absolute inset-0 z-40">
       <div onClick={onClose} className="absolute inset-0 bg-black/35" />
       <div className="absolute top-0 right-0 bottom-0 w-[80%] max-w-[340px] bg-surface shadow-2xl flex flex-col">
         {/* 헤더: 그라데이션 오렌지 + 이름/전화번호 + 노쇼 현황 */}
