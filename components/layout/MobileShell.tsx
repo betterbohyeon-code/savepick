@@ -5,7 +5,7 @@
 export default function MobileShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex justify-center" style={{ background: 'var(--bg)' }}>
-      <div className="w-full max-w-[430px] min-h-screen bg-bg relative">
+      <div className="w-full max-w-[480px] min-h-screen bg-bg relative">
         {children}
       </div>
     </div>
