@@ -3,11 +3,13 @@
 // 마스터 어드민 - 9개 지점 총괄 대시보드 (실명 표시)
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
 type Page = 'dashboard' | 'branches' | 'stats' | 'members' | 'products' | 'accounts'
 
 export default function MasterPage() {
+  const router = useRouter()
   const [page, setPage] = useState<Page>('dashboard')
 
   return (
@@ -72,11 +74,23 @@ export default function MasterPage() {
             </h1>
             <p className="text-xs text-gray-500 mt-0.5">9개 지점 · 2025년 1월 25일 기준</p>
           </div>
-          {page === 'members' && (
-            <span className="text-xs font-semibold text-green-700 bg-green-50 border border-green-200 px-3 py-1.5 rounded-full">
-              👁 실명 전체 표시 (마스터 전용)
-            </span>
-          )}
+          <div className="flex items-center gap-2">
+            {page === 'members' && (
+              <span className="text-xs font-semibold text-green-700 bg-green-50 border border-green-200 px-3 py-1.5 rounded-full">
+                👁 실명 전체 표시 (마스터 전용)
+              </span>
+            )}
+            <button
+              onClick={async () => {
+                if (!confirm('로그아웃 하시겠습니까?')) return
+                await supabase.auth.signOut()
+                router.push('/admin/login')
+              }}
+              className="text-xs text-gray-500 font-medium bg-gray-50 hover:bg-gray-100 px-3 py-1.5 rounded-lg"
+            >
+              로그아웃
+            </button>
+          </div>
         </header>
 
         <div className="flex-1 overflow-y-auto p-6">
