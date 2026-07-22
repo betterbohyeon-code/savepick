@@ -6,6 +6,9 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { decryptPhone } from '@/lib/crypto'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export async function GET() {
   const cookieStore = cookies()
   const supabase = createServerClient(
