@@ -15,7 +15,10 @@ import CustomerDrawer from '@/components/layout/CustomerDrawer'
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토']
 
 function dateKey(d: Date) {
-  return d.toISOString().slice(0, 10)
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
 }
 
 function ProductCard({ product, onApply, disabled }: {
