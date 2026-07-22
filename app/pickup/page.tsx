@@ -298,7 +298,7 @@ function PickupPageInner() {
   if (loading) {
     return (
       <MobileShell>
-        <div className="min-h-screen flex items-center justify-center">
+        <div className="min-h-screen md:h-full md:min-h-0 flex items-center justify-center">
           <div className="w-8 h-8 border-[3px] border-accent border-t-transparent rounded-full animate-spin" />
         </div>
       </MobileShell>
@@ -307,7 +307,7 @@ function PickupPageInner() {
 
   return (
     <MobileShell>
-      <div className="min-h-screen flex flex-col relative">
+      <div className="min-h-screen md:h-full md:min-h-0 flex flex-col relative">
         <div className="sticky top-0 z-20">
           <CustomerHeader storeName={storeName} onMenu={() => setDrawerOpen(true)} />
           <div className="flex gap-2 overflow-x-auto px-5 py-3" style={{ background: 'oklch(0.6 0.17 35)' }}>
