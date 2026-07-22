@@ -11,7 +11,12 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko">
-      <body className="bg-gray-50 text-gray-900 antialiased">{children}</body>
+      <head>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&display=swap" />
+      </head>
+      <body className="antialiased" style={{ background: 'var(--bg)' }}>{children}</body>
     </html>
   )
 }
