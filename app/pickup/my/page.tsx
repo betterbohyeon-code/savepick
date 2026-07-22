@@ -134,7 +134,7 @@ function MyPageInner() {
 
   return (
     <MobileShell>
-      <div className="min-h-screen md:h-full md:min-h-0 flex flex-col">
+      <div className="min-h-screen md:h-full md:min-h-0 flex flex-col relative">
         <CustomerHeader storeName={storeName} onBack={() => router.push(`/pickup?store=${store}`)} onMenu={() => setDrawerOpen(true)} sticky />
 
         <div className="px-6 pt-4">
