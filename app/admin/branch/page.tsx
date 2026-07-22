@@ -96,18 +96,34 @@ function ProductForm({ branchId, adminId, onClose, onSuccess }: {
     total_quantity: '',
     description: '',
     max_per_user: '1',
+    round_id: '',
   })
+  const [rounds, setRounds] = useState<{ id: string; round_name: string; pickup_date: string }[]>([])
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    supabase
+      .from('pickup_rounds')
+      .select('id, round_name, pickup_date')
+      .eq('branch_id', branchId)
+      .order('pickup_date', { ascending: false })
+      .then(({ data }) => setRounds(data || []))
+  }, [branchId])
 
   const handleSubmit = async () => {
     if (!form.name || !form.original_price || !form.sale_price || !form.total_quantity) {
       setError('필수 항목을 모두 입력해주세요.')
       return
     }
+    if (!form.round_id) {
+      setError('픽업 회차를 선택해주세요. (회차가 없다면 먼저 "픽업 회차 관리"에서 만들어주세요)')
+      return
+    }
     setSaving(true)
     const { error } = await createProduct({
       branch_id: branchId,
+      round_id: form.round_id,
       name: form.name,
       original_price: parseInt(form.original_price),
       sale_price: parseInt(form.sale_price),
@@ -129,6 +145,25 @@ function ProductForm({ branchId, adminId, onClose, onSuccess }: {
       <div className="bg-white rounded-2xl w-full max-w-md p-6">
         <h3 className="font-bold text-gray-900 text-lg mb-5">상품 등록</h3>
         <div className="space-y-4">
+          <div>
+            <label className="text-sm font-medium text-gray-700 mb-1 block">픽업 회차 *</label>
+            {rounds.length === 0 ? (
+              <p className="text-sm text-red-500 bg-red-50 rounded-xl px-4 py-2.5">
+                등록된 픽업 회차가 없어요. "픽업 회차 관리"에서 먼저 만들어주세요.
+              </p>
+            ) : (
+              <select
+                value={form.round_id}
+                onChange={e => setForm(f => ({ ...f, round_id: e.target.value }))}
+                className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300 bg-white"
+              >
+                <option value="">회차를 선택하세요</option>
+                {rounds.map(r => (
+                  <option key={r.id} value={r.id}>{r.round_name} ({r.pickup_date})</option>
+                ))}
+              </select>
+            )}
+          </div>
           <div>
             <label className="text-sm font-medium text-gray-700 mb-1 block">상품명 *</label>
             <input
@@ -296,6 +331,12 @@ export default function BranchAdminPage() {
               className="text-sm text-gray-500 font-medium bg-gray-50 hover:bg-gray-100 px-3 py-2 rounded-xl"
             >
               로그아웃
+            </button>
+            <button
+              onClick={() => router.push('/admin/branch/rounds')}
+              className="text-sm text-gray-700 font-medium bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-xl"
+            >
+              픽업 회차 관리
             </button>
             <button
               onClick={() => setShowProductForm(true)}
