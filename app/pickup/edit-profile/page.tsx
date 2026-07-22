@@ -90,7 +90,7 @@ function EditProfilePageInner() {
   if (loading) {
     return (
       <MobileShell>
-        <div className="min-h-screen flex items-center justify-center">
+        <div className="min-h-screen md:h-full md:min-h-0 flex items-center justify-center">
           <div className="w-8 h-8 border-[3px] border-accent border-t-transparent rounded-full animate-spin" />
         </div>
       </MobileShell>
@@ -99,7 +99,7 @@ function EditProfilePageInner() {
 
   return (
     <MobileShell>
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen md:h-full md:min-h-0 flex flex-col">
         <CustomerHeader storeName={storeName} onBack={() => router.back()} />
 
         <div className="px-6 pt-4">
