@@ -269,6 +269,64 @@ function ProductForm({ branchId, adminId, onClose, onSuccess }: {
   )
 }
 
+function ProductsView({ branchId, refreshKey }: { branchId: string; refreshKey: number }) {
+  const [products, setProducts] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    setLoading(true)
+    supabase
+      .from('products')
+      .select('*, round:pickup_rounds(round_name, pickup_date)')
+      .eq('branch_id', branchId)
+      .order('created_at', { ascending: false })
+      .then(({ data }) => {
+        setProducts(data || [])
+        setLoading(false)
+      })
+  }, [branchId, refreshKey])
+
+  if (loading) {
+    return <div className="text-center py-12 text-gray-400 text-sm">불러오는 중...</div>
+  }
+
+  if (products.length === 0) {
+    return (
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center text-gray-400 text-sm">
+        등록된 상품이 없습니다
+      </div>
+    )
+  }
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {products.map(p => (
+        <div key={p.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          {p.image_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={p.image_url} alt={p.name} className="w-full h-36 object-cover" />
+          ) : (
+            <div className="w-full h-36 bg-gray-100 flex items-center justify-center text-gray-300 text-3xl">📦</div>
+          )}
+          <div className="p-4">
+            <div className="flex items-center justify-between mb-1">
+              <h3 className="font-semibold text-gray-900 text-sm">{p.name}</h3>
+              <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${p.is_active ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-400'}`}>
+                {p.is_active ? '판매중' : '중지'}
+              </span>
+            </div>
+            <div className="flex items-baseline gap-2 mb-1">
+              <span className="text-orange-600 font-bold">{p.sale_price?.toLocaleString()}원</span>
+              <span className="text-gray-400 text-xs line-through">{p.original_price?.toLocaleString()}원</span>
+            </div>
+            <p className="text-xs text-gray-500">{p.round?.round_name || '회차 미지정'} · 재고 {p.remaining_quantity}/{p.total_quantity}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export default function BranchAdminPage() {
   const router = useRouter()
   const [admin, setAdmin] = useState<Admin | null>(null)
@@ -276,6 +334,7 @@ export default function BranchAdminPage() {
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<TabType>('applications')
   const [showProductForm, setShowProductForm] = useState(false)
+  const [productsRefreshKey, setProductsRefreshKey] = useState(0)
   const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
@@ -443,6 +502,11 @@ export default function BranchAdminPage() {
             </div>
           </div>
         )}
+
+        {/* 상품 목록 */}
+        {activeTab === 'products' && admin?.branch_id && (
+          <ProductsView branchId={admin.branch_id} refreshKey={productsRefreshKey} />
+        )}
       </main>
 
       {/* 상품 등록 모달 */}
@@ -453,6 +517,7 @@ export default function BranchAdminPage() {
           onClose={() => setShowProductForm(false)}
           onSuccess={() => {
             setShowProductForm(false)
+            setProductsRefreshKey(k => k + 1)
           }}
         />
       )}
