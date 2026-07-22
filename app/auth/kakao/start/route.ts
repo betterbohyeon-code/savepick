@@ -4,6 +4,9 @@
 import { NextResponse } from 'next/server'
 import { getKakaoBranch } from '@/lib/kakao-branches'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
   const store = requestUrl.searchParams.get('store')
